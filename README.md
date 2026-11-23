@@ -15,6 +15,10 @@ Introdução à Ciência da Computação, da Universidade Federal de Santa Catar
 - alertas para produtos com estoque menor ou igual ao mínimo;
 - indicadores de quantidade de produtos, unidades e valor total;
 - exportação dos resultados para CSV.
+- autenticação de acesso com usuário e senha;
+- backup manual e automático do banco SQLite;
+- gráficos Matplotlib da quantidade em estoque;
+- dashboard visual com indicadores e alertas.
 
 ## Diagrama do banco
 
@@ -39,8 +43,13 @@ O relacionamento é feito por `movimentacoes.produto_codigo` referenciando
 
 - Python 3.8 ou superior;
 - `tkinter`, normalmente incluído na instalação padrão do Python.
+- `matplotlib`.
 
-Não há dependências externas.
+Instale as dependências com:
+
+```bash
+python -m pip install -r requirements.txt
+```
 
 ## Como executar
 
@@ -49,6 +58,10 @@ Na pasta do projeto:
 ```bash
 python main.py
 ```
+
+O acesso inicial usa `admin` como usuário e `admin123` como senha.
+Um backup é criado automaticamente ao entrar no sistema e também pode ser
+solicitado pelo botão **Fazer backup**.
 
 Na primeira execução, `estoque.db` e suas tabelas são criados automaticamente
 por `banco.sql`.
@@ -76,6 +89,10 @@ estoque, indicadores e validações.
 | `exportacao.py` | Exportação de relatórios CSV. |
 | `banco.sql` | Criação das tabelas e índices SQLite. |
 | `test_sistema.py` | Testes automatizados. |
+| `autenticacao.py` | Login e autenticação com senha protegida por hash. |
+| `backup.py` | Backup automático e manual do banco. |
+| `graficos.py` | Gráficos de quantidade em estoque com Matplotlib. |
+| `requirements.txt` | Dependências do projeto. |
 
 ## Uso do GitHub Copilot
 
