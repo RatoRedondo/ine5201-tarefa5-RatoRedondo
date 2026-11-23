@@ -24,3 +24,8 @@ ON movimentacoes(produto_codigo);
 
 CREATE INDEX IF NOT EXISTS idx_produtos_categoria
 ON produtos(categoria);
+
+CREATE TABLE IF NOT EXISTS usuarios (
+    usuario TEXT PRIMARY KEY,
+    senha_hash TEXT NOT NULL
+);
