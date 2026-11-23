@@ -1,7 +1,9 @@
-import tempfile
 import unittest
 from pathlib import Path
+import tempfile
 
+from autenticacao import autenticar, criar_usuario_padrao
+from backup import criar_backup
 from conexao import criar_conexao, criar_tabelas
 from movimentacoes import listar_movimentacoes, registrar_movimentacao
 from produtos import buscar_produto, inserir_produto, listar_produtos
@@ -70,6 +72,20 @@ class SistemaEstoqueTest(unittest.TestCase):
         self.assertFalse(validar_preco("-1"))
         self.assertTrue(validar_quantidade("5"))
         self.assertFalse(validar_quantidade("-2"))
+
+    def test_autenticacao_padrao(self):
+        criar_usuario_padrao(self.conexao)
+        self.assertTrue(autenticar("admin", "admin123", self.conexao))
+        self.assertFalse(autenticar("admin", "senha-incorreta", self.conexao))
+
+    def test_cria_backup(self):
+        with tempfile.TemporaryDirectory() as pasta:
+            banco = Path(pasta) / "estoque.db"
+            banco.write_bytes(b"teste")
+            destino = Path(pasta) / "backups"
+            sucesso, caminho = criar_backup(banco, destino)
+            self.assertTrue(sucesso)
+            self.assertTrue(Path(caminho).exists())
 
 
 if __name__ == "__main__":

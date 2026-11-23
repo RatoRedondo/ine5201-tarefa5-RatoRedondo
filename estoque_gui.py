@@ -1,8 +1,10 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
+from backup import criar_backup
 from conexao import criar_conexao, criar_tabelas
 from exportacao import exportar_csv
+from graficos import gerar_grafico_estoque
 from movimentacoes import listar_movimentacoes, registrar_movimentacao
 from produtos import (
     atualizar_produto,
@@ -119,6 +121,9 @@ class SistemaEstoque:
         tk.Button(filtros, text="Exportar CSV", command=self.exportar).pack(
             side=tk.RIGHT
         )
+        tk.Button(filtros, text="Fazer backup", command=self.fazer_backup).pack(
+            side=tk.RIGHT, padx=5
+        )
 
         tabela_frame = tk.Frame(pai)
         tabela_frame.pack(fill=tk.BOTH, expand=True, padx=8, pady=8)
@@ -197,6 +202,13 @@ class SistemaEstoque:
             grade.columnconfigure(coluna, weight=1)
             tk.Label(caixa, textvariable=var, font=("Arial", 18, "bold")).pack()
             tk.Label(caixa, text=chave.replace("_", " ").title()).pack()
+
+        tk.Button(
+            pai,
+            text="Gerar gráfico de estoque",
+            command=self.gerar_grafico,
+            width=22,
+        ).pack(anchor="e", padx=10)
 
         tk.Label(pai, text="Produtos com estoque baixo", font=("Arial", 12, "bold")).pack(
             anchor="w", padx=10
@@ -374,6 +386,29 @@ class SistemaEstoque:
                 produto["estoque_minimo"],
             ))
 
+    def fazer_backup(self):
+        sucesso, destino = criar_backup()
+        if sucesso:
+            messagebox.showinfo("Backup", f"Backup criado em:\n{destino}")
+            self.status.set("Backup realizado com sucesso.")
+        else:
+            messagebox.showerror("Backup", destino)
+
+    def gerar_grafico(self):
+        caminho = filedialog.asksaveasfilename(
+            defaultextension=".png",
+            filetypes=[("Imagem PNG", "*.png")],
+            initialfile="grafico_estoque.png",
+        )
+        if not caminho:
+            return
+        produtos = listar_produtos(self.conexao)
+        sucesso, mensagem = gerar_grafico_estoque(produtos, caminho)
+        if sucesso:
+            messagebox.showinfo("Gráfico", f"Gráfico salvo em:\n{mensagem}")
+        else:
+            messagebox.showerror("Gráfico", mensagem)
+
     def exportar(self):
         caminho = filedialog.asksaveasfilename(
             defaultextension=".csv",
@@ -412,8 +447,8 @@ class SistemaEstoque:
         self.root.destroy()
 
 
-def main():
-    root = tk.Tk()
+def main(root=None):
+    root = root or tk.Tk()
     app = SistemaEstoque(root)
     root.protocol("WM_DELETE_WINDOW", app.fechar)
     root.mainloop()
