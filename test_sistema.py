@@ -4,6 +4,7 @@ import tempfile
 
 from autenticacao import autenticar, criar_usuario_padrao
 from backup import criar_backup
+from graficos import gerar_grafico_estoque
 from conexao import criar_conexao, criar_tabelas
 from movimentacoes import listar_movimentacoes, registrar_movimentacao
 from produtos import buscar_produto, inserir_produto, listar_produtos
@@ -86,6 +87,15 @@ class SistemaEstoqueTest(unittest.TestCase):
             sucesso, caminho = criar_backup(banco, destino)
             self.assertTrue(sucesso)
             self.assertTrue(Path(caminho).exists())
+
+    def test_gera_grafico_de_estoque(self):
+        self.cadastrar()
+        produtos = listar_produtos(self.conexao)
+        with tempfile.TemporaryDirectory() as pasta:
+            caminho = Path(pasta) / "grafico.png"
+            sucesso, _ = gerar_grafico_estoque(produtos, caminho)
+            self.assertTrue(sucesso)
+            self.assertTrue(caminho.exists())
 
 
 if __name__ == "__main__":
